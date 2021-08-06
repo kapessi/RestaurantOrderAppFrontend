@@ -1,0 +1,16 @@
+<h1>Restaurant Order App</h1>
+<div>
+  <p>Please, enter your order:</p>
+  <p>Day time:</p>
+  <p>
+    <select [(ngModel)]="selectedDayTime">
+      <option *ngFor="let t of dayTimes">
+        {{t.name}}
+      </option>
+    </select>
+  </p>
+  <p>Order:</p>
+  <p><input type="text" [(ngModel)]="menuOptions" /></p>
+  <p><button class="btn btn-primary" (click)="getMenu()">Get menu</button></p>
+  <p>{{ menu }}</p>
+</div>
