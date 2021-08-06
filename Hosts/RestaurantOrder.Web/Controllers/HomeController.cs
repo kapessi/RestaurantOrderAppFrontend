@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using RestaurantOrder.Web.Factory;
 using RestaurantOrder.Web.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 
 namespace RestaurantOrder.Web.Controllers
@@ -14,10 +15,12 @@ namespace RestaurantOrder.Web.Controllers
     public class HomeController : ControllerBase
     {
 
+        private IConfiguration configuration;
         private readonly ILogger<HomeController> logger;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(IConfiguration configuration, ILogger<HomeController> logger)
         {
+            this.configuration = configuration;
             this.logger = logger;
         }
 
@@ -26,11 +29,11 @@ namespace RestaurantOrder.Web.Controllers
         {
             try
             {
-                var url = $"https://localhost:44387/api/order/get?DayTime={order.DayTime}";
-                order.DishTypes.Split(',').ToList().ForEach(d => url += $"&DishType={d}");
+                var webApiClientFactory = new WebApiClientFactory();
+                var webApiUrl = webApiClientFactory.CreateUri(configuration, order);
                 using (var httpClient = new HttpClient())
                 {
-                    using (var response = httpClient.GetAsync(url).Result)
+                    using (var response = httpClient.GetAsync(webApiUrl).Result)
                     {
                         var result = response.Content.ReadAsStringAsync().Result;
                         logger.LogInformation("order/get", order);
